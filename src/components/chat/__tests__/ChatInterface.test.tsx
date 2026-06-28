@@ -60,7 +60,19 @@ afterEach(() => {
   cleanup();
 });
 
-test("renders chat interface with message list and input", () => {
+test("renders empty state and input when no messages", () => {
+  render(<ChatInterface />);
+
+  expect(screen.getByText("Start a conversation to generate React components")).toBeDefined();
+  expect(screen.getByTestId("message-input")).toBeDefined();
+});
+
+test("renders message list and input when messages exist", () => {
+  (useChat as any).mockReturnValue({
+    ...mockUseChat,
+    messages: [{ id: "1", role: "user", content: "Hello" }],
+  });
+
   render(<ChatInterface />);
 
   expect(screen.getByTestId("message-list")).toBeDefined();
@@ -138,29 +150,31 @@ test("isLoading is false when status is idle", () => {
 
 
 test("scrolls when messages change", () => {
+  const twoMessages = [
+    { id: "1", role: "user", content: "Hello" },
+    { id: "2", role: "assistant", content: "Hi there!" },
+  ];
+
+  (useChat as any).mockReturnValue({ ...mockUseChat, messages: twoMessages });
   const { rerender } = render(<ChatInterface />);
 
-  // Get initial scroll container
   const scrollContainer = screen.getByTestId("message-list").closest("[data-radix-scroll-area-viewport]");
   expect(scrollContainer).toBeDefined();
 
-  // Update messages - this should trigger the useEffect
-  (useChat as any).mockReturnValue({
-    ...mockUseChat,
-    messages: [
-      { id: "1", role: "user", content: "Hello" },
-      { id: "2", role: "assistant", content: "Hi there!" },
-    ],
-  });
-
+  const threeMessages = [...twoMessages, { id: "3", role: "user", content: "More" }];
+  (useChat as any).mockReturnValue({ ...mockUseChat, messages: threeMessages });
   rerender(<ChatInterface />);
 
-  // Verify component re-rendered with new messages
   const messageList = screen.getByTestId("message-list");
-  expect(messageList.textContent).toContain("2 messages");
+  expect(messageList.textContent).toContain("3 messages");
 });
 
 test("renders with correct layout classes", () => {
+  (useChat as any).mockReturnValue({
+    ...mockUseChat,
+    messages: [{ id: "1", role: "user", content: "Hello" }],
+  });
+
   const { container } = render(<ChatInterface />);
 
   const mainDiv = container.firstChild as HTMLElement;
