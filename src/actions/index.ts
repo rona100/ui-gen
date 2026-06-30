@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { createSession, deleteSession, getSession } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { logger } from "@/lib/logger";
 
 export interface AuthResult {
   success: boolean;
@@ -54,7 +55,7 @@ export async function signUp(
     revalidatePath("/");
     return { success: true };
   } catch (error) {
-    console.error("Sign up error:", error);
+    logger.error("Sign up failed", { error });
     return { success: false, error: "An error occurred during sign up" };
   }
 }
@@ -91,7 +92,7 @@ export async function signIn(
     revalidatePath("/");
     return { success: true };
   } catch (error) {
-    console.error("Sign in error:", error);
+    logger.error("Sign in failed", { error });
     return { success: false, error: "An error occurred during sign in" };
   }
 }
@@ -121,7 +122,7 @@ export async function getUser() {
 
     return user;
   } catch (error) {
-    console.error("Get user error:", error);
+    logger.error("Get user failed", { userId: session.userId, error });
     return null;
   }
 }

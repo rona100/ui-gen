@@ -21,6 +21,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { logger } from "@/lib/logger";
 
 interface HeaderActionsProps {
   user?: {
@@ -51,7 +52,7 @@ export function HeaderActions({ user, projectId }: HeaderActionsProps) {
     if (user && projectId) {
       getProjects()
         .then(setProjects)
-        .catch(console.error)
+        .catch((err) => logger.error("Failed to load projects", { error: err }))
         .finally(() => setInitialLoading(false));
     }
   }, [user, projectId]);
@@ -59,7 +60,7 @@ export function HeaderActions({ user, projectId }: HeaderActionsProps) {
   // Refresh projects when popover opens
   useEffect(() => {
     if (user && projectsOpen) {
-      getProjects().then(setProjects).catch(console.error);
+      getProjects().then(setProjects).catch((err) => logger.error("Failed to load projects", { error: err }));
     }
   }, [projectsOpen, user]);
 

@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { getLanguageModel } from "@/lib/provider";
 import { generationPrompt } from "@/lib/prompts/generation";
+import { logger } from "@/lib/logger";
 
 export async function POST(req: Request) {
   const {
@@ -37,7 +38,7 @@ export async function POST(req: Request) {
     maxTokens: 10_000,
     maxSteps: isMockProvider ? 4 : 40,
     onError: (err: any) => {
-      console.error(err);
+      logger.error("Stream error", { error: err });
     },
     tools: {
       str_replace_editor: buildStrReplaceTool(fileSystem),
@@ -50,7 +51,7 @@ export async function POST(req: Request) {
           // Check if user is authenticated
           const session = await getSession();
           if (!session) {
-            console.error("User not authenticated, cannot save project");
+            logger.warn("Unauthenticated project save attempt", { projectId });
             return;
           }
 
@@ -73,7 +74,7 @@ export async function POST(req: Request) {
             },
           });
         } catch (error) {
-          console.error("Failed to save project data:", error);
+          logger.error("Failed to save project data", { projectId, error });
         }
       }
     },

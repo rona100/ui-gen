@@ -1,4 +1,5 @@
 import * as Babel from "@babel/standalone";
+import { logger } from "@/lib/logger";
 
 export interface TransformResult {
   code: string;
@@ -304,7 +305,7 @@ export function createPreviewHTML(
       entryPointUrl = importMapObj.imports[entryPoint];
     }
   } catch (e) {
-    console.error("Failed to parse import map:", e);
+    logger.error("Failed to parse import map", { error: e });
   }
 
   return `<!DOCTYPE html>

@@ -7,6 +7,7 @@ import {
   createPreviewHTML,
 } from "@/lib/transform/jsx-transformer";
 import { AlertCircle } from "lucide-react";
+import { logger } from "@/lib/logger";
 
 export function PreviewFrame() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -90,7 +91,7 @@ export function PreviewFrame() {
           setError(null);
         }
       } catch (err) {
-        console.error("Preview error:", err);
+        logger.error("Preview render failed", { error: err });
         setError(err instanceof Error ? err.message : "Unknown preview error");
       }
     };
