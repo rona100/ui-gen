@@ -82,7 +82,7 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
                                 toolName={part.toolInvocation.toolName}
                                 args={part.toolInvocation.args}
                                 state={part.toolInvocation.state}
-                                result={part.toolInvocation.result}
+                                result={"result" in part.toolInvocation ? part.toolInvocation.result : undefined}
                               />
                             );
                           case "source":
